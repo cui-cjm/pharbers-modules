@@ -44,8 +44,8 @@ class EMActor(val emn : EMNotification) extends Actor with ActorLogging {
         case rg : DDNRegisterUser => {
             sender ! emn.registerUser(parameters2Map(rg.parameters.toList))
         }
-        case fu : DDNForceOfflineUser => {
-            sender ! emn.offlineUser(fu.user_id)
+        case fq : DDNForceOfflineUser => {
+            sender ! emn.forceOffline(fq.user_id)
         }
         case _ =>
     }

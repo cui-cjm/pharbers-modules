@@ -111,25 +111,29 @@ case class EMNotification(val app_key : String,
   	}
   	
   	def nofity(pm : Map[String, JsValue]) = {
-    		val pushMsg = pm
+    		var pushMsg = pm
     		(HTTP(em_host + org_name + "/" + app_name + "/messages").header("Accept" -> "application/json", "Content-Type" -> "application/json", "Authorization" -> ("Bearer " + getAuthTokenForEM)).
     		  		post(toJson(pushMsg)) \ "error").asOpt[String].map (x => println("notification sent error %s", x)).getOrElse(println("notification sent success"))
   	}
   	
   	def registerUser(pm : Map[String, JsValue]) : JsValue = {
   		try {
-	  		val pushMsg = pm
+	  		var pushMsg = pm
 	    	HTTP(em_host + org_name + "/" + app_name + "/users").header("Accept" -> "application/json", "Content-Type" -> "application/json", "Authorization" -> ("Bearer " + getAuthTokenForEM)).post(toJson(pushMsg))
   		} catch {
   			case ex : Exception => toJson(Map("error" -> "user existing"))
   		}
   	}
 
-	def offlineUser(user_id: String) : JsValue = {
-  		try {
-	    	HTTP(em_host + org_name + "/" + app_name + "/users/" + user_id + "/disconnect").header("Accept" -> "application/json", "Content-Type" -> "application/json", "Authorization" -> ("Bearer " + getAuthTokenForEM)).get
+	def forceOffline(user_id : String) : JsValue = {
+		try {
+			HTTP(em_host + org_name + "/" + app_name + "/users/" + user_id + "/disconnect")
+				.header("Accept" -> "application/json",
+					"Content-Type" -> "application/json",
+					"Authorization" -> ("Bearer " + getAuthTokenForEM))
+				.get
 		} catch {
-  			case ex : Exception => toJson(Map("data" -> Map("result" -> false)))
-  		}
-  	}
+			case ex : Exception => toJson(Map("error" -> "offline error"))
+		}
+	}
 }
