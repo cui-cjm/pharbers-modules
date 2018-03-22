@@ -26,15 +26,13 @@ trait CommonTrait {
     def move2ExportFolder(originPath: String, destPath: String) = {
         val originFile = new File(originPath)
         val destFile = new File(destPath)
-        FileUtils.copyFile(originFile, destFile)
+        FileUtils.write(destFile, FileUtils.readFileToString(originFile), "GB2312")
     }
 
     def unionDataFrameList(listDF: List[DataFrame]): DataFrame = {
         listDF.length match {
             case 1 => listDF.head
-            case 2 => listDF.head.union(listDF.last)
-            case _ : Int => listDF.head.union(unionDataFrameList(listDF.tail))
-            // case _ => throw new Exception("unionDataFrameList Error!")
+            case _ => listDF.head.union(unionDataFrameList(listDF.tail))
         }
     }
 
